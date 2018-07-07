@@ -35,7 +35,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client)=>{
     //     console.log("Unable to fetch Todos. ",err);
     // });
 
-    // ZADATAK 
+    // ZADATAK  
 
     db.collection('user').find({age:20}).toArray().then((data)=>{
         console.log(JSON.stringify(data,undefined,2));
