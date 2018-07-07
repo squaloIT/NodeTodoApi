@@ -33,5 +33,11 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client)=>{
     //     //console.log(JSON.stringify(data, undefined, 2));
     //     console.log(data.ops[0]._id.getTimestamp());
     // });
+
+    // KOMANDE ZA Postavljanje svega sa git-a na heroku 
+    // PRVO MORA heroku create DA BI NAPRAVIO APLIKACIJU
+    // ONDA TREBA PREBACITI SVE SA GIT-A NA TU APP - git push heroku master
+    // I ONDA MOZEMO OTVORITI APLIKACIJU PREKO - heroku open
+
     client.close();
 });
