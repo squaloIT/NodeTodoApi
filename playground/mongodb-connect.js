@@ -1,43 +1,35 @@
 // const MongoClient = require('mongodb').MongoClient;
 const {MongoClient, ObjectID} = require('mongodb');
 
-// var obj = new ObjectID();
-// console.log(obj);
+MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db) => {
+  if (err) {
+    return console.log('Unable to connect to MongoDB server');
+  }
+  console.log('Connected to MongoDB server');
 
-MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client)=>{
-    if(err){
-        return  console.log("Unable to connect to mongodb server.");
-    } 
-    console.log('Connected to MongoDB server');
-    const db = client.db('TodoApp');
+  // db.collection('Todos').insertOne({
+  //   text: 'Something to do',
+  //   completed: false
+  // }, (err, result) => {
+  //   if (err) {
+  //     return console.log('Unable to insert todo', err);
+  //   }
+  //
+  //   console.log(JSON.stringify(result.ops, undefined, 2));
+  // });
 
-    // db.collection("Todos").insertOne({
-    //     text: 'NEsto za uraditi 2',
-    //     completed: false
-    // }, (err, result)=>{
-    //     if(err){
-    //         return console.log("Ne mogu uneti novi todo",err);
-    //     } 
-    //     console.log(JSON.stringify(result.ops,undefined, 2));
-    // });
+  // Insert new doc into Users (name, age, location)
+  // db.collection('Users').insertOne({
+  //   name: 'Andrew',
+  //   age: 25,
+  //   location: 'Philadelphia'
+  // }, (err, result) => {
+  //   if (err) {
+  //     return console.log('Unable to insert user', err);
+  //   }
+  //
+  //   console.log(result.ops[0]._id.getTimestamp());
+  // });
 
-    // db.collection("user").insertOne(
-    //     {
-    //         name:'NoviUser',
-    //         age:43,
-    //         location:'Beograd'
-    //     }, (err, data)=>{
-    //     if(err){
-    //         return console.log(err);
-    //     }
-    //     //console.log(JSON.stringify(data, undefined, 2));
-    //     console.log(data.ops[0]._id.getTimestamp());
-    // });
-
-    // KOMANDE ZA Postavljanje svega sa git-a na heroku 
-    // PRVO MORA heroku create DA BI NAPRAVIO APLIKACIJU
-    // ONDA TREBA PREBACITI SVE SA GIT-A NA TU APP - git push heroku master
-    // I ONDA MOZEMO OTVORITI APLIKACIJU PREKO - heroku open
-
-    client.close();
+  db.close();
 });
