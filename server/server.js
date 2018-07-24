@@ -62,6 +62,23 @@ app.get("/users", (req,res)=>{
   });
 });
 
+app.delete("/todos/:id", (req, res)=>{
+  var id = req.params.id;
+
+  if(!ObjectID.isValid(id)){
+    return res.status(406).send();
+  }
+
+  Todo.findByIdAndRemove(id).then((doc)=>{
+    if(!doc)
+      res.status(404).send({error:"Document does not exist"});
+    else 
+      res.status(200).send(doc);
+  }, (err)=>{
+      res.status(400).send(err);
+  });
+});
+
 app.listen(port, () => {
   console.log(`Started on port ${port}`);
 });
