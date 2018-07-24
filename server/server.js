@@ -71,11 +71,11 @@ app.delete("/todos/:id", (req, res)=>{
 
   Todo.findByIdAndRemove(id).then((doc)=>{
     if(!doc)
-      res.status(404).send({error:"Document does not exist"});
+      return res.status(404).send({error:"Document does not exist"});
     else 
-      res.status(200).send(doc);
-  }, (err)=>{
-      res.status(400).send(err);
+      res.status(200).send({todo:doc});
+  }).catch((e)=>{
+    res.status(400).send(e);
   });
 });
 

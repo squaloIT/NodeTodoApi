@@ -75,6 +75,42 @@ describe("GET /todos", ()=>{
       .end(done);
     });
 });
+describe("DELETE /todos/:id",()=>{
+  it("Bi trebalo da obrise dokument", (done)=>{
+    var hexID = dummyTodos[0]._id.toHexString();
+    request(app)
+      .delete(`/todos/${hexID}`)
+      .expect(200)
+      .expect((res)=>{
+        expect(res.body.todo._id).toBe(hexID);
+      }).end((err, res)=>{
+        if(err)
+          return done(err);
+        
+        Todo.findById(hexID).then((todo)=>{
+          expect(todo).toNotExist();
+          done();
+        }).catch((e)=>done(e));
+      });
+  });
+
+  it("Bi trebalo da vrati 404 ako dokument nije pronadjen", (done)=>{
+    var noviID = new ObjectID().toHexString();
+    request(app)
+      .delete(`/todos/${noviID}`)
+      .expect(404)
+      .expect((res)=>{
+        expect(res.body.error).toBe("Document does not exist", "Text greske koja se vraca sa servera nije dobra!");
+      }).end(done);
+      
+  });
+  it("Bi trebalo da vrati 406 ako prosledjeni id nije validan", (done)=>{
+    request(app)
+      .delete("/todos/12345")
+      .expect(406)
+      .end(done);
+  });
+});
 
 describe("GET /todos/:id", ()=>{
   it("Should return todo document", (done)=>{
