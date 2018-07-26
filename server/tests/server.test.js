@@ -13,7 +13,9 @@ const dummyTodos = [{
   text:"Samo se zezaj i uzivaj u zivotu"
 },{
   _id: new ObjectID(),
-  text: "Zivot je kratak za gluposti glupe"
+  text: "Zivot je kratak za gluposti glupe",
+  completed:true,
+  completed: 123123213123
 }];
 
 beforeEach((done) => {
@@ -111,6 +113,39 @@ describe("DELETE /todos/:id",()=>{
       .end(done);
   });
 });
+
+
+describe("PATCH /todos/:id", ()=>{
+  it("Bi da promeni todo", (done)=>{
+    var idHex = dummyTodos[1]._id.toHexString();
+    request(app)
+      .patch("/todos/"+idHex)
+      .send({ text:"Promenjeno zezanje", completed:true })
+      .expect(200)
+      .expect((res)=>{
+        expect(res.body.todo._id).toBe(idHex);
+        expect(res.body.todo.completed).toBeTruthy();
+        expect(res.body.todo.text).toBe("Promenjeno zezanje");
+        expect(res.body.todo.completedAt).toBeA("number");
+      }).end(done);
+  });
+
+  it("Bi da promeni completedAt kada todo nije zavrsen", (done)=>{
+    var idHex = dummyTodos[1]._id.toHexString();
+    request(app)
+    .patch("/todos/"+idHex)
+    .send({ text:"Promenjen completed u false", completed:false })
+    .expect(200)
+    .expect((res)=>{
+      // expect(res.body.todo._id).toBe(idHex);
+      expect(res.body.todo.completed).toBeFalsy();
+      expect(res.body.todo.text).toBe("Promenjen completed u false");
+      expect(res.body.todo.completedAt).toNotExist();
+    }).end(done);
+  });
+});
+
+
 
 describe("GET /todos/:id", ()=>{
   it("Should return todo document", (done)=>{
