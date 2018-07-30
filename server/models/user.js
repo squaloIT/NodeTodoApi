@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt =require("jsonwebtoken");
 const _ = require("lodash");
+const bcrypt= require("bcryptjs");
+
 // import isEmail from 'validator/lib/isEmail';
 var UserSchema = new mongoose.Schema({
   email: {
@@ -76,6 +78,30 @@ UserSchema.statics.findByToken = function(token){
     'tokens.access':'auth'
   });  //vraca promise
 };
+
+UserSchema.pre('save', function(next){
+  var user = this;
+  
+  if(user.isModified('password')){
+    bcrypt.genSalt(10, (err,salt)=>{
+      if(err){
+        return console.log("Greska prilikom soljenja");
+      } else {
+        bcrypt.hash(user.password,salt,(err, hashedValue)=>{
+          if(err){
+            return console.log("Greska prilikom soljenja");
+          } else {
+            user.password=hashedValue;
+            console.log(user.password);
+            next();
+          }
+        });
+      }
+    });
+  } else {
+    next();
+  }
+});
 // UserSchema.methods je objekat kome kao svojstva definisemo sve metode koje zelimo da nas model ima.
 var User = mongoose.model('User', UserSchema);
 
