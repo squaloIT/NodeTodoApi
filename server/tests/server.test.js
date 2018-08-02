@@ -4,25 +4,11 @@ const {ObjectID} = require("mongodb");
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
+const {User} = require('./../models/user');
+const {dummyTodos, users, populateTodos, populateUsers} = require('./seed/seed');
 
-const dummyTodos = [{
-  _id: new ObjectID(),
-  text:"First test todo"
-},{
-  _id: new ObjectID(),
-  text:"Samo se zezaj i uzivaj u zivotu"
-},{
-  _id: new ObjectID(),
-  text: "Zivot je kratak za gluposti glupe",
-  completed:true,
-  completed: 123123213123
-}];
-
-beforeEach((done) => {
-  Todo.remove({}).then(() =>{
-    return Todo.insertMany(dummyTodos);
-  }).then(() => done());
-});
+beforeEach(populateUsers);
+beforeEach(populateTodos);
 
 describe('POST /todos', () => {
   it('should create a new todo', (done) => {
@@ -172,6 +158,78 @@ describe("GET /todos/:id", ()=>{
     request(app)
       .get("/todos/12345")
       .expect(406)
+      .end(done);
+  });
+});
+
+describe("GET /users/me", ()=>{
+  it("Bi trebalo da vrati korisnika ako je ulogovan", (done)=>{
+    console.log("Token iz server.test.js ",users[0].tokens[0].token);
+    console.log("Typeof ",typeof users[0].tokens[0].token);
+    request(app)
+      .get(`/users/me`)
+      .set('x-auth',users[0].tokens[0].token)
+      .expect(200)
+      .expect((res)=>{
+        // expect(res.body.tokens.token).toBe(users[0].tokens.token);
+        expect(res.body._id).toBe(users[0]._id.toHexString());
+        expect(res.body.email).toBe(users[0].email);
+      })
+      .end(done);
+  });
+  it("Bi trebalo da vrati 401 ako nije ulogovan", (done)=>{
+    request(app)
+      .get(`/users/me`)
+      .expect(401)
+      .expect((res)=>{
+        expect(res.body).toEqual({});
+      })
+      .end(done);
+  });
+});
+
+describe("GET /users", ()=>{
+  it("Bi trebalo da kreira korisnika", (done)=>{
+    var email="example@example.com";
+    var password="123mnb!";
+
+    request(app)
+      .post('/users')
+      .send({email, password})
+      .expect(200)
+      .expect((res)=>{
+        expect(res.headers['x-auth']).toExist();
+        expect(res.body._id).toExist();
+        expect(res.body.email).toBe(email);
+      }).end((err)=>{
+        if(err){
+          return done(err);
+        }
+        User.findOne({email}).then((user)=>{
+          expect(user).toExist();
+          expect(user.password).toNotBe(password);
+          done();
+        });
+      });
+  });
+  it("Bi da dodje do greske prilikom validacije", (done)=>{
+    var email="and";
+    var password="123!";
+
+    request(app)
+      .post('/users')
+      .send({email, password})
+      .expect(400)
+      .end(done);
+  });
+  it("Ne bi trebalo da kreira korisnika jer isti postoji", (done)=>{
+    var email=users[0].email;
+    var password="123mnb123!";
+
+    request(app)
+      .post('/users')
+      .send({email, password})
+      .expect(400)
       .end(done);
   });
 });

@@ -57,7 +57,23 @@ UserSchema.methods.generateAuthToken = function() {
     return token;  // OVaj return token ce biti returnovan u success funkciju then()
   });
 };
-
+UserSchema.statics.findByCredentials = function(email, password){
+  var User = this;
+ 
+  return User.findOne({email}).then((user)=>{
+    if(!user){
+      return Promise.reject();
+    }
+    return new Promise((resolve,reject)=>{
+      bcrypt.compare(password, user.password, (err, res)=>{
+          if(res)
+            resolve(user);
+          else
+            reject("No user with that email and password");
+      });
+    });
+  });
+}
 UserSchema.statics.findByToken = function(token){
   var User = this; // OVDE SE MODEL NALAZI U THIS - UserSchema.statics
   var decoded;
@@ -92,7 +108,6 @@ UserSchema.pre('save', function(next){
             return console.log("Greska prilikom soljenja");
           } else {
             user.password=hashedValue;
-            console.log(user.password);
             next();
           }
         });
