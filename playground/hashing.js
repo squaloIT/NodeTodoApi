@@ -1,30 +1,53 @@
-const jwt =require("jsonwebtoken");
-const {SHA256}= require("crypto-js");
-const bcrypt= require("bcryptjs");
+const {SHA256} = require('crypto-js');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs')
 
-var message = "Nikola drago mi je ";
+var password = '123abc!';
 
-var hash = SHA256(message).toString();
-// console.log("Message :", message);
-// console.log("Hash :", hash);
+// bcrypt.genSalt(10, (err, salt) => {
+//   bcrypt.hash(password, salt, (err, hash) => {
+//     console.log(hash);
+//   });
+// });
+
+var hashedPassword = '$2a$10$huAU4qTnQuGPifHEXfV9cOmPJ7p61oKaoXrY1WviiDAznE/rW8oLK';
+
+bcrypt.compare('123!', hashedPassword, (err, res) => {
+  console.log(res);
+});
 
 // var data = {
-//     id:5
+//   id: 10
 // };
-// var token = jwt.sign(data, 'zezanjac'); //Uzima obj i pravi hash od data i vraca token.
+//
+// var token = jwt.sign(data, '123abc');
 // console.log(token);
-// var decoded = jwt.verify(token, 'zezanjac'); //Dok verify vodi racuna da se data koji smo sign-ovali i hashovali u token nije promenio u medjuvremenu, to znamo tako sto prosledimo token i "salt" kojim smo "posolili" 
-// console.log(decoded);
-var criptovana;
-var password = "123abc!";
-bcrypt.genSalt(10,(err, salt)=>{
-    bcrypt.hash(password, salt, (err, hash)=>{
-        console.log(hash);
-    });
-});     // OVAKO SE GENERISE POSOLJENA SIFRA UZ POMOC BCRYPT-A
+//
+// var decoded = jwt.verify(token, '123abc');
+// console.log('decoded', decoded);
 
-var passHash = "$2a$10$7iURHx18jD8yY0O1ywAG..jF9lUBhkxe5SQ0XTCK1DaHvvgRgl9m.";
+// var message = 'I am user number 3';
+// var hash = SHA256(message).toString();
+//
+// console.log(`Message: ${message}`);
+// console.log(`Hash: ${hash}`);
 
-bcrypt.compare(password, passHash, (err, res)=>{
-    console.log("Da li su isti password i passHash",res);
-});
+// var data = {
+//   id: 4
+// };
+// var token = {
+//   data,
+//   hash: SHA256(JSON.stringify(data) + 'somesecret').toString()
+// }
+//
+//
+// // token.data.id = 5;
+// // token.hash = SHA256(JSON.stringify(token.data)).toString();
+//
+//
+// var resultHash = SHA256(JSON.stringify(token.data) + 'somesecret').toString();
+// if (resultHash === token.hash) {
+//   console.log('Data was not changed');
+// } else {
+//   console.log('Data was changed. Do not trust!');
+// }
