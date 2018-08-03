@@ -1,13 +1,18 @@
-// var env = process.env.NODE_ENV || 'development';
+// var env = process.env.NODE_ENV || "development";
 var env =  'development';
+var configJSON = require("./config.json");
+console.log(configJSON); 
 
-if (env === 'development') {
-  process.env.PORT = 3000;
-  process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoApp';
-} else if (env === 'test') {
-  process.env.PORT = 3000;
-  process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest';
+if(env === 'development' || env ==='test'){
+
+  var config = configJSON[env];
+  Object.keys(config).forEach(function(key){
+    process.env[key] = config[key];
+  });
+
+  console.log("PORT ", process.env.PORT);
+  console.log("Mongo_URI ", process.env.MONGODB_URI);
+  console.log("JWT_SECRET ", process.env.JWT_SECRET);
+  console.log("JWT_SECRET typeof", typeof process.env.JWT_SECRET);
 }
-console.log("Nacin rada.",env);
-console.log("Port na kome se radi.",process.env.PORT);
-console.log("MONGODB URI.",process.env.MONGODB_URI);
+
